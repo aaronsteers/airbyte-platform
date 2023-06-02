@@ -27,7 +27,7 @@ def main():
     f = open(args.json)
     d = json.load(f)
     out = []
-    
+
     check_run_id = int(d["check_url"].split("/")[-1])
 
     for elem in d['cases']:
@@ -48,7 +48,7 @@ def main():
                 }
                 out.append(output)
 
-    with open(args.json + "l", 'w') as f:
+    with open(f"{args.json}l", 'w') as f:
         for o in out:
             json.dump(o, f)
             f.write('\n')

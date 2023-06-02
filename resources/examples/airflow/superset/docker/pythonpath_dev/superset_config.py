@@ -37,11 +37,8 @@ def get_env_variable(var_name, default=None):
     except KeyError:
         if default is not None:
             return default
-        else:
-            error_msg = "The environment variable {} was missing, abort...".format(
-                var_name
-            )
-            raise EnvironmentError(error_msg)
+        error_msg = f"The environment variable {var_name} was missing, abort..."
+        raise EnvironmentError(error_msg)
 
 
 DATABASE_DIALECT = get_env_variable("DATABASE_DIALECT")
@@ -52,14 +49,7 @@ DATABASE_PORT = get_env_variable("DATABASE_PORT")
 DATABASE_DB = get_env_variable("DATABASE_DB")
 
 # The SQLAlchemy connection string.
-SQLALCHEMY_DATABASE_URI = "%s://%s:%s@%s:%s/%s" % (
-    DATABASE_DIALECT,
-    DATABASE_USER,
-    DATABASE_PASSWORD,
-    DATABASE_HOST,
-    DATABASE_PORT,
-    DATABASE_DB,
-)
+SQLALCHEMY_DATABASE_URI = f"{DATABASE_DIALECT}://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_DB}"
 
 REDIS_HOST = get_env_variable("REDIS_HOST")
 REDIS_PORT = get_env_variable("REDIS_PORT")

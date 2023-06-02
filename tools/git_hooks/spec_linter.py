@@ -48,7 +48,7 @@ def read_spec_file(spec_path: str) -> bool:
     for err_msg, err_field in errors:
         print_error(spec_path, err_msg, err_field)
 
-    return False if errors else True
+    return not errors
 
 
 def print_error(spec_path: str, error_message: str, failed_field: Optional[str] = None) -> None:
@@ -132,5 +132,5 @@ def get_full_field_name(field_name: str, parent_fields: Optional[List[str]] = No
 if __name__ == "__main__":
     spec_files = sys.argv[1:]
 
-    if not all([read_spec_file(file_path) for file_path in spec_files]):
+    if not all(read_spec_file(file_path) for file_path in spec_files):
         exit(1)

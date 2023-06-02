@@ -350,9 +350,9 @@ def test_read_stream_record_limit(request_record_limit, max_record_limit):
         api.read_stream(StreamReadRequestBody(manifest=MANIFEST, config=CONFIG, stream="hashiras", record_limit=request_record_limit))
     )
     single_slice = actual_response.slices[0]
-    total_records = 0
-    for i, actual_page in enumerate(single_slice.pages):
-        total_records += len(actual_page.records)
+    total_records = sum(
+        len(actual_page.records) for actual_page in single_slice.pages
+    )
     assert total_records == min([record_limit, n_records])
 
 
@@ -392,9 +392,9 @@ def test_read_stream_default_record_limit(max_record_limit):
         api.read_stream(StreamReadRequestBody(manifest=MANIFEST, config=CONFIG, stream="hashiras"))
     )
     single_slice = actual_response.slices[0]
-    total_records = 0
-    for i, actual_page in enumerate(single_slice.pages):
-        total_records += len(actual_page.records)
+    total_records = sum(
+        len(actual_page.records) for actual_page in single_slice.pages
+    )
     assert total_records == min([max_record_limit, n_records])
 
 
