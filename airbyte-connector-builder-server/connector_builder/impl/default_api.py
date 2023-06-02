@@ -112,13 +112,15 @@ spec:
 
         stream_list_read = []
         try:
-            for http_stream in adapter.get_http_streams(streams_list_request_body.config):
-                stream_list_read.append(
-                    StreamsListReadStreams(
-                        name=http_stream.name,
-                        url=urljoin(http_stream.url_base, http_stream.path()),
-                    )
+            stream_list_read.extend(
+                StreamsListReadStreams(
+                    name=http_stream.name,
+                    url=urljoin(http_stream.url_base, http_stream.path()),
                 )
+                for http_stream in adapter.get_http_streams(
+                    streams_list_request_body.config
+                )
+            )
         except Exception as error:
             self.logger.error(
                 f"Could not list streams with error: {error.args[0]} - {ErrorFormatter.get_stacktrace_as_string(error)}"
@@ -173,10 +175,7 @@ spec:
         if len(slices) >= self._max_slices:
             return True
 
-        for slice in slices:
-            if len(slice.pages) >= self._max_pages_per_slice:
-                return True
-        return False
+        return any(len(slice.pages) >= self._max_pages_per_slice for slice in slices)
 
     async def resolve_manifest(
         self, resolve_manifest_request_body: ResolveManifestRequestBody = Body(None, description="")

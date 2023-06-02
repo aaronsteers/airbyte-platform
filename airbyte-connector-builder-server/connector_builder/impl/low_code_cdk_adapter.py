@@ -26,16 +26,15 @@ class LowCodeSourceAdapter(CdkAdapter):
     def get_http_streams(self, config: Dict[str, Any]) -> List[HttpStream]:
         http_streams = []
         for stream in self._source.streams(config=config):
-            if isinstance(stream, DeclarativeStream):
-                if isinstance(stream.retriever, HttpStream):
-                    http_streams.append(stream.retriever)
-                else:
-                    raise TypeError(
-                        f"A declarative stream should only have a retriever of type HttpStream, but received: {stream.retriever.__class__}"
-                    )
-            else:
+            if not isinstance(stream, DeclarativeStream):
                 raise TypeError(
                     f"A declarative source should only contain streams of type DeclarativeStream, but received: {stream.__class__}"
+                )
+            if isinstance(stream.retriever, HttpStream):
+                http_streams.append(stream.retriever)
+            else:
+                raise TypeError(
+                    f"A declarative stream should only have a retriever of type HttpStream, but received: {stream.retriever.__class__}"
                 )
         return http_streams
 

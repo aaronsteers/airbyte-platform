@@ -53,27 +53,23 @@ def add_venv_to_xml_root(module: str, module_full_path: str, xml_root):
 
 
 def get_output_path(input_path, output_path):
-    if output_path is None:
-        return input_path
-    else:
-        return output_path
+    return input_path if output_path is None else output_path
 
 
 def get_input_path(input_from_args, version, home_directory):
     if input_from_args is not None:
         return input_from_args
+    path_to_intellij_settings = f"{home_directory}/Library/Application Support/JetBrains/"
+    walk = os.walk(path_to_intellij_settings)
+    intellij_versions = [version for version in next(walk)[1] if version != "consentOptions"]
+    if version in intellij_versions:
+        intellij_version_to_update = version
+    elif len(intellij_versions) == 1:
+        intellij_version_to_update = intellij_versions[0]
     else:
-        path_to_intellij_settings = f"{home_directory}/Library/Application Support/JetBrains/"
-        walk = os.walk(path_to_intellij_settings)
-        intellij_versions = [version for version in next(walk)[1] if version != "consentOptions"]
-        if version in intellij_versions:
-            intellij_version_to_update = version
-        elif len(intellij_versions) == 1:
-            intellij_version_to_update = intellij_versions[0]
-        else:
-            raise RuntimeError(
-                f"Please select which version of Intellij to update with the `{INTELLIJ_VERSION_FLAG}` flag. Options are: {intellij_versions}")
-        return f"{path_to_intellij_settings}{intellij_version_to_update}/options/jdk.table.xml"
+        raise RuntimeError(
+            f"Please select which version of Intellij to update with the `{INTELLIJ_VERSION_FLAG}` flag. Options are: {intellij_versions}")
+    return f"{path_to_intellij_settings}{intellij_version_to_update}/options/jdk.table.xml"
 
 
 def module_has_requirements_file(module):
@@ -140,9 +136,9 @@ if __name__ == "__main__":
                 modules_installed.append(module)
             else:
                 errors.append(module)
-        if len(modules_installed) > 0:
+        if modules_installed:
             print(f"Successfully installed virtual environment for {modules_installed}")
-        if len(errors) > 0:
+        if errors:
             print(f"Failed to install virtual environment for {errors}")
 
     if args.update_intellij:
